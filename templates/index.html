@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injury Risk Prediction</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        form label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #555;
+        }
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #eaf6ff;
+            border-left: 5px solid #3498db;
+            border-radius: 5px;
+        }
+        .result h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .result p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Injury Risk Prediction</h1>
+        <form action="/" method="post">
+            <label for="model">Select Model</label>
+            <select name="model" id="model" required>
+                <option value="Random Forest">Random Forest</option>
+                <option value="XGBoost">XGBoost</option>
+                <option value="LightGBM">LightGBM</option>
+            </select>
+
+            <label for="age">Player Age</label>
+            <input type="number" name="age" placeholder="e.g., 25" step="any" required>
+
+            <label for="weight">Weight (kg)</label>
+            <input type="number" name="weight" placeholder="e.g., 75" step="any" required>
+
+            <label for="height">Height (cm)</label>
+            <input type="number" name="height" placeholder="e.g., 180" step="any" required>
+
+            <label for="previous_injuries">Previous Injuries (0 for No, 1 for Yes)</label>
+            <input type="number" name="previous_injuries" min="0" max="1" placeholder="0" required>
+
+            <label for="training_intensity">Training Intensity (0.0 to 1.0)</label>
+            <input type="number" name="training_intensity" min="0" max="1" step="0.1" placeholder="0.7" required>
+            
+            <label for="recovery_time">Recovery Time (days)</label>
+            <input type="number" name="recovery_time" placeholder="e.g., 5" required>
+
+            <label for="sleep_hours">Average Sleep Hours (4-10)</label>
+            <input type="number" name="sleep_hours" min="4" max="10" step="0.5" placeholder="8" required>
+
+            <label for="hydration_level">Hydration Level (0.0 to 1.0)</label>
+            <input type="number" name="hydration_level" min="0" max="1" step="0.1" placeholder="0.8" required>
+
+            <label for="muscle_fatigue_level">Muscle Fatigue Level (0.0 to 1.0)</label>
+            <input type="number" name="muscle_fatigue_level" min="0" max="1" step="0.1" placeholder="0.6" required>
+
+            <button type="submit">Predict Risk</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h2>Prediction Result</h2>
+            <p><strong>Model Used:</strong> {{ result.model_name }}</p>
+            <p><strong>Injury Probability:</strong> {{ result.probability }}</p>
+            <p><strong>Outcome:</strong> {{ result.prediction }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
