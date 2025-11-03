@@ -1,83 +1,76 @@
-from flask import Flask, render_template, request
-import numpy as np
+from flask import Flask, request, render_template
 import joblib
+import numpy as np
 
+# Initialize the Flask application
 app = Flask(__name__)
 
-# Load the scaler and models when the application starts
-try:
-    scaler = joblib.load('models/scaler.pkl')
-    rf_model = joblib.load('models/random_forest.pkl')
-    xgb_model = joblib.load('models/xgboost.pkl')
-    lgb_model = joblib.load('models/lightgbm.pkl')
-    models = {
-        'Random Forest': rf_model,
-        'XGBoost': xgb_model,
-        'LightGBM': lgb_model
-    }
-except FileNotFoundError as e:
-    print(f"Error loading model files: {e}")
-    print("Please ensure the 'models' directory and all .pkl files are present.")
-    # Handle the error appropriately, maybe exit or return an error state
-    exit()
+# Load the machine learning models and the scaler
+# These are loaded once when the application starts for efficiency.
+scaler = joblib.load('models/scaler.pkl')
+rf_model = joblib.load('models/random_forest.pkl')
+xgb_model = joblib.load('models/xgboost.pkl')
+lgb_model = joblib.load('models/lightgbm.pkl')
 
+# Dictionary to hold the models for easy selection
+models = {
+    'Random Forest': rf_model,
+    'XGBoost': xgb_model,
+    'LightGBM': lgb_model
+}
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    prediction_result = None
-    if request.method == 'POST':
-        try:
-            # --- Get user input from the form ---
-            model_name = request.form['model']
-            age = float(request.form['age'])
-            weight = float(request.form['weight'])
-            height = float(request.form['height'])
-            previous_injuries = int(request.form['previous_injuries'])
-            training_intensity = float(request.form['training_intensity'])
-            recovery_time = int(request.form['recovery_time'])
-            sleep_hours = float(request.form['sleep_hours'])
-            hydration_level = float(request.form['hydration_level'])
-            muscle_fatigue_level = float(request.form['muscle_fatigue_level'])
+@app.route('/')
+def home():
+    """Renders the home page with the prediction form."""
+    return render_template('index.html')
 
-            # --- Preprocessing ---
-            # 1. Calculate BMI
-            bmi = weight / ((height / 100) ** 2)
+@app.route('/predict', methods=['POST'])
+def predict():
+    """Handles the prediction request from the form."""
+    try:
+        # Get all the input values from the form
+        age = float(request.form['age'])
+        weight = float(request.form['weight'])
+        height = float(request.form['height'])
+        previous_injuries = int(request.form['previous_injuries'])
+        training_intensity = float(request.form['training_intensity'])
+        recovery_time = int(request.form['recovery_time'])
+        sleep_hours = float(request.form['sleep_hours'])
+        hydration_level = float(request.form['hydration_level'])
+        muscle_fatigue = float(request.form['muscle_fatigue'])
+        model_name = request.form['model']
 
-            # 2. Create the feature array in the correct order
-            feature_names = [
-                'PlayerAge', 'PlayerWeight', 'PlayerHeight', 'PreviousInjuries',
-                'TrainingIntensity', 'RecoveryTime', 'SleepHours', 'HydrationLevel',
-                'MuscleFatigueLevel', 'BMI'
-            ]
-            user_features = np.array([[
-                age, weight, height, previous_injuries, training_intensity,
-                recovery_time, sleep_hours, hydration_level, muscle_fatigue_level, bmi
-            ]])
+        # Calculate BMI from weight and height
+        bmi = weight / ((height / 100) ** 2)
 
-            # 3. Scale the features
-            user_features_scaled = scaler.transform(user_features)
+        # Create a numpy array with the features in the correct order for the model
+        features = np.array([[
+            age, weight, height, previous_injuries, training_intensity,
+            recovery_time, sleep_hours, hydration_level, muscle_fatigue, bmi
+        ]])
 
-            # --- Prediction ---
-            model = models.get(model_name)
-            if model:
-                # Predict probability and class
-                probability = model.predict_proba(user_features_scaled)[0][1]
-                prediction_label = 'Injury' if probability > 0.5 else 'No Injury'
+        # Scale the features using the pre-fitted scaler
+        scaled_features = scaler.transform(features)
 
-                prediction_result = {
-                    "model_name": model_name,
-                    "probability": f"{probability:.2%}",
-                    "prediction": prediction_label
-                }
-            else:
-                return "Error: Invalid model selected.", 400
+        # Select the chosen model
+        model = models[model_name]
 
-        except (ValueError, KeyError) as e:
-            # Handle cases where form data is missing or not in the correct format
-            return f"Invalid input error: {e}", 400
+        # Make the prediction and get the probability
+        prediction = model.predict(scaled_features)[0]
+        probability = model.predict_proba(scaled_features)[0][1]
 
-    return render_template('index.html', result=prediction_result)
+        # Format the output strings
+        prediction_text = 'Injury is Likely' if prediction == 1 else 'Injury is Unlikely'
+        probability_text = f'Injury Probability: {probability:.2%}'
 
+    except Exception as e:
+        # Handle errors gracefully
+        prediction_text = f'Error: {e}'
+        probability_text = 'Please check your inputs.'
+
+    # Render the page again with the prediction results
+    return render_template('index.html', prediction_text=prediction_text, probability_text=probability_text)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Run the Flask app with multi-threading enabled
+    app.run(debug=True, threaded=True)

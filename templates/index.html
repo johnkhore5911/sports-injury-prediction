@@ -4,177 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Injury Risk Prediction</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #4a148c; /* Deep Purple */
-            --primary-hover: #6a1b9a;
-            --secondary-bg: #ede7f6;
-            --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --white-color: #ffffff;
-            --text-color: #333;
-            --border-color: #ddd;
-            --shadow-color: rgba(0, 0, 0, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--background-gradient);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
         }
-
         .container {
-            max-width: 600px;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
             width: 100%;
-            background-color: var(--white-color);
-            padding: 30px 40px;
-            box-shadow: 0 8px 30px var(--shadow-color);
-            border-radius: 15px;
         }
-
         h1 {
             text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
         }
-
-        form {
-            text-align: left;
+        .form-group {
+            margin-bottom: 1rem;
         }
-
         label {
             display: block;
-            margin: 15px 0 5px;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            color: var(--primary-color);
         }
-
         input, select {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
-
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 8px rgba(74, 20, 140, 0.2);
-        }
-
         button {
             width: 100%;
-            margin-top: 30px;
-            padding: 15px;
-            background-color: var(--primary-color);
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: 700;
+            border-radius: 5px;
             font-size: 1.1rem;
-            color: var(--white-color);
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s;
         }
-
         button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
+            background-color: #2980b9;
         }
-
         .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: var(--secondary-bg);
-            border-left: 6px solid var(--primary-color);
-            border-radius: 8px;
-            animation: slide-in 0.5s ease-out;
-        }
-        
-        @keyframes slide-in {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result h2 {
-            margin-top: 0;
-            color: var(--primary-color);
             text-align: center;
-            margin-bottom: 15px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #ecf0f1;
         }
-
+        .result h2 {
+            margin: 0;
+            color: #2980b9;
+        }
         .result p {
+            margin: 0.5rem 0 0;
             font-size: 1.1rem;
-            line-height: 1.6;
         }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Injury Risk Prediction</h1>
-        <form action="/" method="post">
-            <label for="model">Select Model</label>
-            <select name="model" id="model" required>
-                <option value="Random Forest">Random Forest</option>
-                <option value="XGBoost">XGBoost</option>
-                <option value="LightGBM">LightGBM</option>
-            </select>
-
-            <label for="age">Player Age</label>
-            <input type="number" name="age" placeholder="e.g., 25" step="any" required>
-
-            <label for="weight">Weight (kg)</label>
-            <input type="number" name="weight" placeholder="e.g., 75" step="any" required>
-
-            <label for="height">Height (cm)</label>
-            <input type="number" name="height" placeholder="e.g., 180" step="any" required>
-
-            <label for="previous_injuries">Previous Injuries (0 for No, 1 for Yes)</label>
-            <input type="number" min="0" max="1" name="previous_injuries" placeholder="0" required>
-
-            <label for="training_intensity">Training Intensity (0.0 to 1.0)</label>
-            <input type="number" min="0" max="1" step="0.1" name="training_intensity" placeholder="0.7" required>
-            
-            <label for="recovery_time">Recovery Time (days)</label>
-            <input type="number" name="recovery_time" placeholder="e.g., 5" required>
-
-            <label for="sleep_hours">Average Sleep Hours (4-10)</label>
-            <input type="number" min="4" max="10" step="0.5" name="sleep_hours" placeholder="8" required>
-
-            <label for="hydration_level">Hydration Level (0.0 to 1.0)</label>
-            <input type="number" min="0" max="1" step="0.1" name="hydration_level" placeholder="0.8" required>
-
-            <label for="muscle_fatigue_level">Muscle Fatigue Level (0.0 to 1.0)</label>
-            <input type="number" min="0" max="1" step="0.1" name="muscle_fatigue_level" placeholder="0.6" required>
-
-            <button type="submit">Predict Risk</button>
+        <h1>Athlete Injury Risk Prediction</h1>
+        <form action="{{ url_for('predict') }}" method="post">
+            <div class="form-group">
+                <label for="age">Player Age</label>
+                <input type="number" id="age" name="age" step="1" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Player Weight (kg)</label>
+                <input type="number" id="weight" name="weight" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="height">Player Height (cm)</label>
+                <input type="number" id="height" name="height" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="previous_injuries">Previous Injuries</label>
+                <select id="previous_injuries" name="previous_injuries">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="training_intensity">Training Intensity (0 to 1)</label>
+                <input type="number" id="training_intensity" name="training_intensity" step="0.1" min="0" max="1" required>
+            </div>
+            <div class="form-group">
+                <label for="recovery_time">Recovery Time (days)</label>
+                <input type="number" id="recovery_time" name="recovery_time" step="1" required>
+            </div>
+            <div class="form-group">
+                <label for="sleep_hours">Average Sleep Hours (4-10)</label>
+                <input type="number" id="sleep_hours" name="sleep_hours" step="0.5" min="4" max="10" required>
+            </div>
+            <div class="form-group">
+                <label for="hydration_level">Hydration Level (0 to 1)</label>
+                <input type="number" id="hydration_level" name="hydration_level" step="0.1" min="0" max="1" required>
+            </div>
+            <div class="form-group">
+                <label for="muscle_fatigue">Muscle Fatigue Level (0 to 1)</label>
+                <input type="number" id="muscle_fatigue" name="muscle_fatigue" step="0.1" min="0" max="1" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Choose Model</label>
+                <select id="model" name="model">
+                    <option value="Random Forest">Random Forest</option>
+                    <option value="XGBoost">XGBoost</option>
+                    <option value="LightGBM">LightGBM</option>
+                </select>
+            </div>
+            <button type="submit">Predict</button>
         </form>
 
-        {% if result %}
+        {% if prediction_text %}
         <div class="result">
-            <h2>Prediction Result</h2>
-            <p><strong>Model Used:</strong> {{ result.model_name }}</p>
-            <p><strong>Injury Probability:</strong> {{ result.probability }}</p>
-            <p><strong>Outcome:</strong> {{ result.prediction }}</p>
+            <h2>{{ prediction_text }}</h2>
+            <p>{{ probability_text }}</p>
         </div>
         {% endif %}
     </div>
