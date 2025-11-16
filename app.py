@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 import joblib
 import numpy as np
+import os
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -72,5 +73,8 @@ def predict():
     return render_template('index.html', prediction_text=prediction_text, probability_text=probability_text)
 
 if __name__ == '__main__':
-    # Run the Flask app with multi-threading enabled
-    app.run(debug=True, threaded=True)
+    # Get port from environment variable (Render sets this) or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Run the Flask app
+    # Note: debug=False for production deployment
+    app.run(host='0.0.0.0', port=port, debug=False)
