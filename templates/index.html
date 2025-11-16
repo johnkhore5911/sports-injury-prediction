@@ -3,139 +3,681 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Injury Risk Prediction</title>
+    <title>InjuryPredictionML - Sports Injury Prediction</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grad)' rx='15'/%3E%3Cpath d='M50 25 L50 75 M25 50 L75 50' stroke='white' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grad)' rx='15'/%3E%3Cpath d='M50 25 L50 75 M25 50 L75 50' stroke='white' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Hero Section */
+        .hero {
+            color: white;
+            text-align: center;
+            padding: 120px 20px 80px;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease;
+            letter-spacing: -1px;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.95);
+            max-width: 800px;
+            animation: fadeInUp 1s ease;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .hero .cta-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 16px 48px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            animation: fadeInUp 1.2s ease;
+        }
+        
+        .hero .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Section Wrapper */
+        .section {
+            background: white;
             margin: 0;
+            padding: 80px 20px;
+            position: relative;
         }
+        
+        .section:nth-child(even) {
+            background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        }
+        
+        /* About Section */
+        .about {
+            text-align: center;
+        }
+        
+        .about h2 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-weight: 800;
+        }
+        
+        .about p {
+            font-size: 1.15rem;
+            color: #555;
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+        
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .github-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+        
+        /* Form Section */
+        .form-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
         .container {
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 650px;
+            margin: 0 auto;
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        h1 {
+        
+        .container h2 {
             text-align: center;
             color: #2c3e50;
+            margin-bottom: 2.5rem;
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+        
+        .form-group {
             margin-bottom: 1.5rem;
         }
-        .form-group {
-            margin-bottom: 1rem;
-        }
+        
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
         }
+        
         input, select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
         }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
         button {
             width: 100%;
-            padding: 0.75rem;
-            background-color: #3498db;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 1.1rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+            margin-top: 1rem;
         }
+        
         button:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102,126,234,0.4);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         .result {
             text-align: center;
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 5px;
-            background-color: #ecf0f1;
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px solid #667eea30;
+            animation: slideIn 0.5s ease;
         }
-        .result h2 {
-            margin: 0;
-            color: #2980b9;
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+        
+        .result h3 {
+            margin: 0 0 1rem 0;
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
         .result p {
-            margin: 0.5rem 0 0;
+            margin: 0;
             font-size: 1.1rem;
+            color: #555;
+        }
+        
+        /* Team Section */
+        .team {
+            text-align: center;
+        }
+        
+        .team h2 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+        
+        .team .intro {
+            font-size: 1.15rem;
+            color: #555;
+            max-width: 900px;
+            margin: 0 auto 3rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .team-card {
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .team-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(102,126,234,0.2);
+        }
+        
+        .team-card .avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-card .avatar svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+        
+        .team-card h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .team-card .role {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .team-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem 20px;
+        }
+        
+        footer p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 1200px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 2rem 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Athlete Injury Risk Prediction</h1>
-        <form action="{{ url_for('predict') }}" method="post">
-            <div class="form-group">
-                <label for="age">Player Age</label>
-                <input type="number" id="age" name="age" step="1" required>
-            </div>
-            <div class="form-group">
-                <label for="weight">Player Weight (kg)</label>
-                <input type="number" id="weight" name="weight" step="0.1" required>
-            </div>
-            <div class="form-group">
-                <label for="height">Player Height (cm)</label>
-                <input type="number" id="height" name="height" step="0.1" required>
-            </div>
-            <div class="form-group">
-                <label for="previous_injuries">Previous Injuries</label>
-                <select id="previous_injuries" name="previous_injuries">
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="training_intensity">Training Intensity (0 to 1)</label>
-                <input type="number" id="training_intensity" name="training_intensity" step="0.1" min="0" max="1" required>
-            </div>
-            <div class="form-group">
-                <label for="recovery_time">Recovery Time (days)</label>
-                <input type="number" id="recovery_time" name="recovery_time" step="1" required>
-            </div>
-            <div class="form-group">
-                <label for="sleep_hours">Average Sleep Hours (4-10)</label>
-                <input type="number" id="sleep_hours" name="sleep_hours" step="0.5" min="4" max="10" required>
-            </div>
-            <div class="form-group">
-                <label for="hydration_level">Hydration Level (0 to 1)</label>
-                <input type="number" id="hydration_level" name="hydration_level" step="0.1" min="0" max="1" required>
-            </div>
-            <div class="form-group">
-                <label for="muscle_fatigue">Muscle Fatigue Level (0 to 1)</label>
-                <input type="number" id="muscle_fatigue" name="muscle_fatigue" step="0.1" min="0" max="1" required>
-            </div>
-            <div class="form-group">
-                <label for="model">Choose Model</label>
-                <select id="model" name="model">
-                    <option value="Random Forest">Random Forest</option>
-                    <option value="XGBoost">XGBoost</option>
-                    <option value="LightGBM">LightGBM</option>
-                </select>
-            </div>
-            <button type="submit">Predict</button>
-        </form>
+    <div class="bg-animation"></div>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>InjuryPredictionML</h1>
+        <p>Predict Sports Injuries with Machine Learning</p>
+        <p>A 7th Semester Project by UIET PU Students</p>
+        <p>Enter player details to predict injury likelihood and recovery time using our advanced ML model.</p>
+        <a href="#form" class="cta-button">Predict Now →</a>
+    </section>
 
-        {% if prediction_text %}
-        <div class="result">
-            <h2>{{ prediction_text }}</h2>
-            <p>{{ probability_text }}</p>
+    <!-- About Section -->
+    <section class="section about" id="about">
+        <h2>About InjuryPredictionML</h2>
+        <p>
+            InjuryPredictionML is an advanced machine learning system designed to predict sports injuries and estimate recovery times. 
+            Our model uses state-of-the-art algorithms including Random Forest, XGBoost, and LightGBM to analyze various player metrics 
+            such as age, weight, height, training intensity, sleep patterns, hydration levels, and muscle fatigue.
+        </p>
+        <p>
+            This project leverages comprehensive data analysis and machine learning techniques to help athletes, coaches, and sports 
+            professionals make informed decisions about training schedules, injury prevention, and recovery planning.
+        </p>
+        <a href="https://github.com/johnkhore5911/sports-injury-prediction" target="_blank" class="github-link">
+            <span>🐱</span>
+            <span>View on GitHub</span>
+        </a>
+    </section>
+
+    <!-- Form Section -->
+    <section class="section form-section" id="form">
+        <div class="container">
+            <h2>Athlete Injury Risk Prediction</h2>
+            <form id="predictionForm" method="post">
+                <div class="form-group">
+                    <label for="age">Player Age</label>
+                    <input type="number" id="age" name="age" step="1" placeholder="e.g. 25" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Player Weight (kg)</label>
+                    <input type="number" id="weight" name="weight" step="0.1" placeholder="e.g. 75.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="height">Player Height (cm)</label>
+                    <input type="number" id="height" name="height" step="0.1" placeholder="e.g. 180.0" required>
+                </div>
+                <div class="form-group">
+                    <label for="previous_injuries">Previous Injuries</label>
+                    <select id="previous_injuries" name="previous_injuries">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="training_intensity">Training Intensity (0 to 1)</label>
+                    <input type="number" id="training_intensity" name="training_intensity" step="0.1" min="0" max="1" placeholder="e.g. 0.7" required>
+                </div>
+                <div class="form-group">
+                    <label for="recovery_time">Recovery Time (days)</label>
+                    <input type="number" id="recovery_time" name="recovery_time" step="1" placeholder="e.g. 5" required>
+                </div>
+                <div class="form-group">
+                    <label for="sleep_hours">Average Sleep Hours (4-10)</label>
+                    <input type="number" id="sleep_hours" name="sleep_hours" step="0.5" min="4" max="10" placeholder="e.g. 8.0" required>
+                </div>
+                <div class="form-group">
+                    <label for="hydration_level">Hydration Level (0 to 1)</label>
+                    <input type="number" id="hydration_level" name="hydration_level" step="0.1" min="0" max="1" placeholder="e.g. 0.8" required>
+                </div>
+                <div class="form-group">
+                    <label for="muscle_fatigue">Muscle Fatigue Level (0 to 1)</label>
+                    <input type="number" id="muscle_fatigue" name="muscle_fatigue" step="0.1" min="0" max="1" placeholder="e.g. 0.3" required>
+                </div>
+                <div class="form-group">
+                    <label for="model">Choose Model</label>
+                    <select id="model" name="model">
+                        <option value="Random Forest">Random Forest</option>
+                        <option value="XGBoost">XGBoost</option>
+                        <option value="LightGBM">LightGBM</option>
+                    </select>
+                </div>
+                <button type="submit">Predict</button>
+            </form>
+
+            <div id="resultContainer">
+                {% if prediction_text %}
+                <div class="result">
+                    <h3>{{ prediction_text }}</h3>
+                    <p>{{ probability_text }}</p>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
-    </div>
+    </section>
+
+    <!-- Meet the Team Section -->
+    <section class="section team" id="team">
+        <h2>Meet the Team</h2>
+        <p class="intro">
+            Developed by 4th-year IT students at UIET PU, passionate about coding, machine learning, and sports analytics. 
+            This is our 7th-semester project.
+        </p>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <h3>Aarish Garg</h3>
+                <p class="role">ML Model Developer</p>
+                <p>Developed the machine learning model, focusing on data preprocessing and model training.</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #777;">4th-year IT student at UIET PU with a passion for machine learning and software development.</p>
+            </div>
+            <div class="team-card">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <h3>Lakhan Vashney</h3>
+                <p class="role">Feature Engineer</p>
+                <p>Contributed to model development and feature engineering.</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #777;">4th-year IT student at UIET PU with a passion for machine learning and software development.</p>
+            </div>
+            <div class="team-card">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <h3>John</h3>
+                <p class="role">Full stack and DevOps Engineer</p>
+                <p>Fixed bugs, built the website and handled frontend-backend integration. Deployed the model on Render for scalable API access.</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #777;">4th-year IT student at UIET PU with a passion for machine learning and software development.</p>
+            </div>
+            <div class="team-card">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <h3>Ankush</h3>
+                <p class="role">File Management</p>
+                <p>Assisted with project file organization and management.</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #777;">4th-year IT student at UIET PU with a passion for machine learning and software development.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 InjuryPredictionML | 7th Semester Project by UIET PU Students</p>
+        <div class="logo">
+            <span>🐱</span>
+            <span>InjuryPredictionML</span>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const form = e.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const resultContainer = document.getElementById('resultContainer');
+            
+            // Save form values to preserve them
+            const formData = new FormData(form);
+            
+            // Show loading state
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Predicting...';
+            resultContainer.innerHTML = '<div class="result"><h3>Processing...</h3><p>Please wait while we analyze the data.</p></div>';
+            
+            // Check if result container is in viewport, if not scroll to it smoothly
+            const resultRect = resultContainer.getBoundingClientRect();
+            const isInViewport = resultRect.top >= 0 && resultRect.bottom <= window.innerHeight;
+            
+            if (!isInViewport) {
+                // Only scroll if results are not visible
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            
+            try {
+                // Submit form via AJAX
+                const response = await fetch('{{ url_for("predict") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+                
+                // Get the HTML response
+                const html = await response.text();
+                
+                // Create a temporary div to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Extract the result from the response
+                const resultDiv = tempDiv.querySelector('#resultContainer .result');
+                
+                if (resultDiv) {
+                    // Display the result
+                    resultContainer.innerHTML = resultDiv.outerHTML;
+                    
+                    // Smoothly scroll to results if they're not fully visible
+                    setTimeout(() => {
+                        const newResultRect = resultContainer.getBoundingClientRect();
+                        const isFullyVisible = newResultRect.top >= 0 && newResultRect.bottom <= window.innerHeight;
+                        if (!isFullyVisible) {
+                            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }, 100);
+                } else {
+                    // Fallback: try to find any result div
+                    const anyResult = tempDiv.querySelector('.result');
+                    if (anyResult) {
+                        resultContainer.innerHTML = anyResult.outerHTML;
+                        setTimeout(() => {
+                            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                    } else {
+                        throw new Error('Could not parse result');
+                    }
+                }
+                
+            } catch (error) {
+                resultContainer.innerHTML = `
+                    <div class="result" style="border-color: #e74c3c; background: #e74c3c15;">
+                        <h3 style="color: #e74c3c;">Error</h3>
+                        <p>Failed to get prediction. Please try again.</p>
+                    </div>
+                `;
+            } finally {
+                // Restore button state
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            }
+        });
+    </script>
+    {% if prediction_text %}
+    <script>
+        // Scroll to results on page load if they exist
+        window.addEventListener('load', function() {
+            document.getElementById('form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+    {% endif %}
 </body>
 </html>
